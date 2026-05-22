@@ -1,0 +1,218 @@
+<Window x:Class="ytlivechatwedus.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="YouTube Chat Overlay Controller" 
+        Height="680" Width="480"
+        Background="#121214"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize">
+    <Window.Resources>
+        <!-- Standard text styling -->
+        <Style x:Key="HeaderStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="SubheaderStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#8F90A6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <Style x:Key="HelpTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#636681"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,5,0,0"/>
+        </Style>
+
+        <!-- Gorgeous Gradient Button Style -->
+        <Style x:Key="GradientButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="8" BorderThickness="0" Name="border">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#00f2fe" Offset="0"/>
+                                    <GradientStop Color="#4facfe" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Dark Panel Border Style -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#1A1A1E"/>
+            <Setter Property="BorderBrush" Value="#2A2A32"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+
+        <!-- Modern CheckBox Styling -->
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#E4E4E6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+        </Style>
+
+        <!-- Modern Slider Styling -->
+        <Style TargetType="Slider">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Title -->
+            <RowDefinition Height="*"/>
+            <!-- Settings panel scrollable -->
+            <RowDefinition Height="Auto"/>
+            <!-- Status & Connect -->
+        </Grid.RowDefinitions>
+
+        <!-- Title Block -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock FontSize="24" FontWeight="ExtraBold" Foreground="White">
+                <Run Text="Antigravity " Foreground="#4facfe"/>
+                <Run Text="LiveChat Overlay"/>
+            </TextBlock>
+            <TextBlock Text="Overlay transparent YouTube live chat on games and windows." 
+                       Foreground="#636681" FontSize="12" Margin="0,2,0,0"/>
+        </StackPanel>
+
+        <!-- Settings Scrollable Main Area -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
+            <StackPanel>
+                <!-- YouTube Stream Connection -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="YouTube Live Stream" Style="{StaticResource HeaderStyle}"/>
+                        
+                        <TextBlock Text="Video ID or Live Stream URL" Style="{StaticResource SubheaderStyle}"/>
+                        <TextBox x:Name="txtUrl" Height="36" Background="#24242B" Foreground="White" 
+                                 BorderBrush="#3E3E4A" BorderThickness="1" SelectionBrush="#4facfe"
+                                 Padding="8,5" VerticalContentAlignment="Center" FontSize="13" Margin="0,0,0,5"
+                                 Text="https://www.youtube.com/watch?v=5qap5aO4i9A"/>
+                        <TextBlock Text="Supports full links or the 11-character video ID." Style="{StaticResource HelpTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Window Overlay Preferences -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Overlay Dimensions &amp; Behavior" Style="{StaticResource HeaderStyle}"/>
+
+                        <!-- Position Lock/Unlock & Click-Through -->
+                        <CheckBox x:Name="chkClickThrough" Content="Enable Mouse Click-Through (Lock Overlay)" IsChecked="False" Checked="ChkClickThrough_Changed" Unchecked="ChkClickThrough_Changed"/>
+                        <TextBlock Text="When locked, you cannot click the overlay. It acts as a passive background hud. Press Ctrl+Shift+L to lock/unlock on the fly." Style="{StaticResource HelpTextStyle}"/>
+
+                        <Separator Height="1" Background="#2A2A32" Margin="0,15"/>
+
+                        <!-- Always on Top toggle -->
+                        <CheckBox x:Name="chkAlwaysOnTop" Content="Always On Top" IsChecked="True" Checked="ChkAlwaysOnTop_Changed" Unchecked="ChkAlwaysOnTop_Changed"/>
+                        <TextBlock Text="Keeps the chat layer on top of games and other windows." Style="{StaticResource HelpTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Styling Controls -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Aesthetics &amp; Presets" Style="{StaticResource HeaderStyle}"/>
+
+                        <!-- Opacity Slider -->
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Overlay Transparency" Style="{StaticResource SubheaderStyle}" Grid.Column="0"/>
+                            <TextBlock x:Name="lblOpacity" Text="80%" Foreground="#4facfe" FontWeight="Bold" FontSize="12" Grid.Column="1"/>
+                        </Grid>
+                        <Slider x:Name="sliderOpacity" Minimum="10" Maximum="100" Value="80" IsSnapToTickEnabled="True" TickFrequency="5" ValueChanged="SliderOpacity_ValueChanged"/>
+
+                        <!-- Zoom Slider -->
+                        <Grid Margin="0,10,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Chat Font Scaling" Style="{StaticResource SubheaderStyle}" Grid.Column="0"/>
+                            <TextBlock x:Name="lblZoom" Text="100%" Foreground="#4facfe" FontWeight="Bold" FontSize="12" Grid.Column="1"/>
+                        </Grid>
+                        <Slider x:Name="sliderZoom" Minimum="50" Maximum="150" Value="100" IsSnapToTickEnabled="True" TickFrequency="5" ValueChanged="SliderZoom_ValueChanged"/>
+
+                        <Separator Height="1" Background="#2A2A32" Margin="0,15"/>
+
+                        <!-- Style Theme Presets -->
+                        <TextBlock Text="Theme Presets" Style="{StaticResource SubheaderStyle}"/>
+                        <ComboBox x:Name="comboPresets" Height="36" Background="#24242B" Foreground="White" 
+                                  BorderBrush="#3E3E4A" BorderThickness="1" Padding="10,5"
+                                  VerticalContentAlignment="Center" FontSize="13" Margin="0,0,0,10"
+                                  SelectionChanged="ComboPresets_SelectionChanged">
+                            <ComboBoxItem Content="Minimalist Bubbles"/>
+                            <ComboBoxItem Content="Neon Cyberpunk"/>
+                            <ComboBoxItem Content="Clean Monospace"/>
+                            <ComboBoxItem Content="Glassmorphic Frost"/>
+                            <ComboBoxItem Content="Custom CSS Editor"/>
+                        </ComboBox>
+
+                        <!-- Custom CSS TextBox -->
+                        <TextBlock x:Name="lblCustomCss" Text="Custom CSS Stylesheet (Live Update)" Style="{StaticResource SubheaderStyle}" Visibility="Collapsed"/>
+                        <TextBox x:Name="txtCustomCss" Height="120" Background="#1D1D22" Foreground="#A3A3B8" 
+                                 BorderBrush="#3E3E4A" BorderThickness="1" Padding="8" FontFamily="Consolas" 
+                                 FontSize="12" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto"
+                                 TextWrapping="Wrap" Visibility="Collapsed" TextChanged="TxtCustomCss_TextChanged"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Actions panel -->
+        <Border Grid.Row="2" Background="#1A1A1E" BorderBrush="#2A2A32" BorderThickness="1,1,1,0" CornerRadius="12,12,0,0" Padding="15" Margin="-20,0,-20,-20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="130"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblStatus" Text="Status: Disconnected" Foreground="#8F90A6" FontSize="12" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="lblHotkeyReminder" Text="Hotkey: Ctrl+Shift+L to toggle lock" Foreground="#636681" FontSize="11" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <Button x:Name="btnConnect" Content="LAUNCH OVERLAY" Style="{StaticResource GradientButtonStyle}" Grid.Column="1" Click="BtnConnect_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
