@@ -90,4 +90,4 @@ The overlay comes packed with premium pre-configured CSS layouts:
 
 If you find this overlay helpful, please consider supporting development:
 - **BagiBagi**: [bagibagi.co/xppaicyberr](https://bagibagi.co/xppaicyberr)
-- **Crypto Address (ETH/BSC/Polygon)**: `0xE11018C82D4405bDBc7414eC988Fd08351666666`
+- **Crypto (ENS)**: `xppaicyber.eth` & `xppaicyber.base.eth`

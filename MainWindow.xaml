@@ -328,7 +328,7 @@
                         <Hyperlink NavigateUri="https://bagibagi.co/xppaicyberr" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#00f2fe" FontWeight="Bold" TextDecorations="None">
                             <Run Text="bagibagi"/>
                         </Hyperlink>
-                        <Run Text=" | Crypto: 0xE11018C82D4405bDBc7414eC988Fd08351666666"/>
+                        <Run Text=" | Crypto: xppaicyber.eth"/>
                     </TextBlock>
                 </StackPanel>
 
