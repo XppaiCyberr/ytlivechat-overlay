@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="YouTube Chat Overlay Controller" 
+        Title="XCYoutube Live Chat Overlay Controller" 
         Height="680" Width="480"
         Background="#121214"
         WindowStartupLocation="CenterScreen"
@@ -142,6 +142,72 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- SLEEK CUSTOM SCROLLBAR STYLE -->
+        <Style TargetType="{x:Type RepeatButton}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Background="Transparent" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type Thumb}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="rectangle" 
+                                CornerRadius="4" 
+                                Background="#2E2E3A" 
+                                Opacity="0.8"
+                                Margin="1,0,1,0" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="rectangle" Property="Background" Value="#4facfe"/>
+                                <Setter TargetName="rectangle" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="rectangle" Property="Background" Value="#00f2fe"/>
+                                <Setter TargetName="rectangle" Property="Opacity" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type ScrollBar}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Margin" Value="2,0,2,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="Bg" SnapsToDevicePixels="true" Background="Transparent">
+                            <Border CornerRadius="4" Background="Transparent" />
+                            <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsEnabled}">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="20">
@@ -157,8 +223,8 @@
         <!-- Title Block -->
         <StackPanel Grid.Row="0" Margin="0,0,0,15">
             <TextBlock FontSize="24" FontWeight="ExtraBold" Foreground="White">
-                <Run Text="Antigravity " Foreground="#4facfe"/>
-                <Run Text="LiveChat Overlay"/>
+                <Run Text="XC" Foreground="#00f2fe"/>
+                <Run Text="Youtube Live Chat Overlay"/>
             </TextBlock>
             <TextBlock Text="Overlay transparent YouTube live chat on games and windows." 
                        Foreground="#636681" FontSize="12" Margin="0,2,0,0"/>
