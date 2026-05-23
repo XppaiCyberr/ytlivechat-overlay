@@ -147,7 +147,7 @@ namespace ytlivechatwedus
             bool isChecked = chkClickThrough.IsChecked == true;
             if (_overlayWindow != null)
             {
-                _overlayWindow.SetClickThrough(isChecked);
+                _overlayWindow.SetOverlayMode(isChecked);
             }
         }
 
@@ -217,7 +217,7 @@ namespace ytlivechatwedus
 
             _overlayWindow.Opacity = sliderOpacity.Value / 100.0;
             _overlayWindow.SetZoom(sliderZoom.Value / 100.0);
-            _overlayWindow.SetClickThrough(chkClickThrough.IsChecked == true);
+            _overlayWindow.SetOverlayMode(chkClickThrough.IsChecked == true);
             _overlayWindow.Topmost = chkAlwaysOnTop.IsChecked == true;
             ApplyThemePreset();
         }

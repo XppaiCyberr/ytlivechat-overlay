@@ -13,12 +13,98 @@
         Topmost="True"
         ShowInTaskbar="False"
         WindowStartupLocation="Manual"
+        ResizeMode="CanResizeWithGrip"
         Left="100" Top="100">
+    
+    <Window.Resources>
+        <!-- Clean drag bar button style -->
+        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#8F90A6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF453A"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
-        <!-- The WebView2 control, with background transparent by default -->
-        <wv2:WebView2 x:Name="webView" 
-                      DefaultBackgroundColor="Transparent" 
-                      HorizontalAlignment="Stretch" 
-                      VerticalAlignment="Stretch"/>
+        <!-- Outer border giving boundary feedback in Edit Mode -->
+        <Border x:Name="WindowBorder" 
+                BorderThickness="2" 
+                BorderBrush="#4facfe" 
+                Background="#64141419" 
+                CornerRadius="8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Title / Drag Bar -->
+                    <RowDefinition Height="*"/>    <!-- WebView2 Content -->
+                    <RowDefinition Height="Auto"/> <!-- Bottom Status / Resize Grip -->
+                </Grid.RowDefinitions>
+
+                <!-- 1. Title/Drag Bar (Visible in Edit Mode only) -->
+                <Grid x:Name="TitleBar" 
+                      Grid.Row="0" 
+                      Background="#1D1D22" 
+                      Height="30" 
+                      MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="✦ Chat Overlay (Drag to Move / Resize)" 
+                               Foreground="#00f2fe" 
+                               FontWeight="Bold" 
+                               FontSize="11" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                    
+                    <Button Content="✕" 
+                            Style="{StaticResource TitleBarButtonStyle}"
+                            Grid.Column="1" 
+                            Click="CloseButton_Click"/>
+                </Grid>
+
+                <!-- 2. WebView2 Control -->
+                <wv2:WebView2 x:Name="webView" 
+                              Grid.Row="1"
+                              DefaultBackgroundColor="Transparent" 
+                              HorizontalAlignment="Stretch" 
+                              VerticalAlignment="Stretch"/>
+
+                <!-- 3. Bottom Status & Resize Handle Bar (Visible in Edit Mode only) -->
+                <Grid x:Name="BottomBar" 
+                      Grid.Row="2" 
+                      Background="#1D1D22" 
+                      Height="20">
+                    <TextBlock Text="Unlock settings in Controller | Drag corner to resize" 
+                               Foreground="#636681" 
+                               FontSize="9" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                    
+                    <!-- Grip for resizing -->
+                    <ResizeGrip HorizontalAlignment="Right" 
+                                VerticalAlignment="Bottom" 
+                                Margin="0,0,2,2"/>
+                </Grid>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

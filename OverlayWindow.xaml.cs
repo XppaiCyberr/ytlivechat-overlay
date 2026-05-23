@@ -49,7 +49,7 @@ namespace ytlivechatwedus
         private void OverlayWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // Set initial click-through state
-            SetClickThrough(_isClickThrough);
+            SetOverlayMode(_isClickThrough);
         }
 
         private async void InitializeWebView()
@@ -212,6 +212,40 @@ namespace ytlivechatwedus
             ";
             
             await webView.CoreWebView2.ExecuteScriptAsync(js);
+        }
+        private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+            {
+                this.DragMove();
+            }
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        public void SetOverlayMode(bool isLocked)
+        {
+            _isClickThrough = isLocked;
+            
+            if (isLocked)
+            {
+                TitleBar.Visibility = Visibility.Collapsed;
+                BottomBar.Visibility = Visibility.Collapsed;
+                WindowBorder.BorderBrush = System.Windows.Media.Brushes.Transparent;
+                WindowBorder.Background = System.Windows.Media.Brushes.Transparent;
+                SetClickThrough(true);
+            }
+            else
+            {
+                TitleBar.Visibility = Visibility.Visible;
+                BottomBar.Visibility = Visibility.Visible;
+                WindowBorder.BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 79, 172, 254)); // #4facfe
+                WindowBorder.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(100, 20, 20, 25)); // Semi-transparent dark
+                SetClickThrough(false);
+            }
         }
     }
 }
