@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="XCYoutube Live Chat Overlay Controller" 
+        Icon="logo.png"
         Height="510" Width="440"
         Background="#121214"
         WindowStartupLocation="CenterScreen"
