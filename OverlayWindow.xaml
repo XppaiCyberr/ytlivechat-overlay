@@ -54,7 +54,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/> <!-- Title / Drag Bar -->
                     <RowDefinition Height="*"/>    <!-- WebView2 Content -->
-                    <RowDefinition Height="Auto"/> <!-- Bottom Status / Resize Grip -->
                 </Grid.RowDefinitions>
 
                 <!-- 1. Title/Drag Bar (Visible in Edit Mode only) -->
@@ -88,22 +87,13 @@
                               HorizontalAlignment="Stretch" 
                               VerticalAlignment="Stretch"/>
 
-                <!-- 3. Bottom Status & Resize Handle Bar (Visible in Edit Mode only) -->
-                <Grid x:Name="BottomBar" 
-                      Grid.Row="2" 
-                      Background="#1D1D22" 
-                      Height="20">
-                    <TextBlock Text="Unlock settings in Controller | Drag corner to resize" 
-                               Foreground="#636681" 
-                               FontSize="9" 
-                               VerticalAlignment="Center" 
-                               Margin="10,0,0,0"/>
-                    
-                    <!-- Grip for resizing -->
-                    <ResizeGrip HorizontalAlignment="Right" 
-                                VerticalAlignment="Bottom" 
-                                Margin="0,0,2,2"/>
-                </Grid>
+                <!-- 3. Floating Resize Grip (Visible in Edit Mode only, overlaps WebView2) -->
+                <ResizeGrip x:Name="BottomGrip" 
+                            Grid.Row="1"
+                            Width="18" Height="18"
+                            HorizontalAlignment="Right" 
+                            VerticalAlignment="Bottom" 
+                            Margin="0,0,4,4"/>
             </Grid>
         </Border>
     </Grid>

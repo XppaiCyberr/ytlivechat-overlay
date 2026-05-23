@@ -233,7 +233,7 @@ namespace ytlivechatwedus
             if (isLocked)
             {
                 TitleBar.Visibility = Visibility.Collapsed;
-                BottomBar.Visibility = Visibility.Collapsed;
+                BottomGrip.Visibility = Visibility.Collapsed;
                 WindowBorder.BorderBrush = System.Windows.Media.Brushes.Transparent;
                 WindowBorder.Background = System.Windows.Media.Brushes.Transparent;
                 SetClickThrough(true);
@@ -241,7 +241,7 @@ namespace ytlivechatwedus
             else
             {
                 TitleBar.Visibility = Visibility.Visible;
-                BottomBar.Visibility = Visibility.Visible;
+                BottomGrip.Visibility = Visibility.Visible;
                 WindowBorder.BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 79, 172, 254)); // #4facfe
                 WindowBorder.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(100, 20, 20, 25)); // Semi-transparent dark
                 SetClickThrough(false);

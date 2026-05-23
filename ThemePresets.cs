@@ -3,12 +3,17 @@ namespace ytlivechatwedus
     public static class ThemePresets
     {
         public static readonly string BaseCSS = @"
-            /* Hide YouTube chat header and input/action panel */
+            /* Hide YouTube chat header, footer, engagement messages, and input/action panel */
             yt-live-chat-header-renderer,
+            yt-live-chat-footer-renderer,
+            yt-live-chat-viewer-engagement-message-renderer,
             #item-scroller #action-panel,
             yt-live-chat-message-input-renderer,
             #input-container,
-            #separator {
+            #footer,
+            #separator,
+            #interaction-card,
+            #viewer-engagement {
                 display: none !important;
             }
 
