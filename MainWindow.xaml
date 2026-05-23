@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="XCYoutube Live Chat Overlay Controller" 
-        Icon="logo.png"
-        Height="510" Width="440"
+        Height="520" Width="440"
         Background="#121214"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize">
@@ -314,7 +313,7 @@
         </StackPanel>
 
         <!-- Actions Panel -->
-        <Border Grid.Row="2" Background="#1A1A1E" BorderBrush="#2A2A32" BorderThickness="1" CornerRadius="6" Padding="8,10" Margin="0,5,0,0">
+        <Border Grid.Row="2" Background="#1A1A1E" BorderBrush="#2A2A32" BorderThickness="1" CornerRadius="6" Padding="8,8" Margin="0,5,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -324,9 +323,16 @@
                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
                     <TextBlock x:Name="lblStatus" Text="Status: Disconnected" Foreground="#8F90A6" FontSize="11" FontWeight="SemiBold"/>
                     <TextBlock x:Name="lblHotkeyReminder" Text="Hotkey: Ctrl+Shift+L to lock/unlock" Foreground="#636681" FontSize="10" Margin="0,1,0,0"/>
+                    <TextBlock Foreground="#636681" FontSize="9" Margin="0,3,0,0" TextWrapping="Wrap">
+                        <Run Text="Support me: "/>
+                        <Hyperlink NavigateUri="https://bagibagi.co/xppaicyberr" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#00f2fe" FontWeight="Bold" TextDecorations="None">
+                            <Run Text="bagibagi"/>
+                        </Hyperlink>
+                        <Run Text=" | Crypto: 0xE11018C82D4405bDBc7414eC988Fd08351666666"/>
+                    </TextBlock>
                 </StackPanel>
 
-                <Button x:Name="btnConnect" Content="LAUNCH OVERLAY" Style="{StaticResource GradientButtonStyle}" Width="130" Grid.Column="1" Click="BtnConnect_Click"/>
+                <Button x:Name="btnConnect" Content="LAUNCH OVERLAY" Style="{StaticResource GradientButtonStyle}" Width="130" Grid.Column="1" Click="BtnConnect_Click" VerticalAlignment="Center"/>
             </Grid>
         </Border>
     </Grid>
