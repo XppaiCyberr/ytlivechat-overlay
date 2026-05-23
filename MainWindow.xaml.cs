@@ -17,11 +17,31 @@ namespace ytlivechatwedus
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hwnd, int index);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowPos(IntPtr hwnd, IntPtr hwndInsertAfter, int x, int y, int cx, int cy, uint flags);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SendMessage(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam);
+
         private const uint MOD_CONTROL = 0x0002;
         private const uint MOD_SHIFT = 0x0004;
         private const uint VK_L = 0x004C; // 'L' key
         private const int HOTKEY_ID = 9000;
         private const int WM_HOTKEY = 0x0312;
+
+        private const int GWL_EXSTYLE = -20;
+        private const int WS_EX_DLGMODALFRAME = 0x00000001;
+        private const int SWP_NOSIZE = 0x0001;
+        private const int SWP_NOMOVE = 0x0002;
+        private const int SWP_NOZORDER = 0x0004;
+        private const int SWP_FRAMECHANGED = 0x0020;
+        private const uint WM_SETICON = 0x0080;
 
         private IntPtr _windowHandle;
         private HwndSource? _hwndSource;
@@ -49,10 +69,32 @@ namespace ytlivechatwedus
             
             // Register Global Hotkey (Ctrl + Shift + L)
             _windowHandle = new WindowInteropHelper(this).Handle;
+            
+            // Remove the default C# window icon on the GUI title bar
+            RemoveWindowIcon(_windowHandle);
+
             _hwndSource = HwndSource.FromHwnd(_windowHandle);
             _hwndSource.AddHook(HwndHook);
             
             RegisterHotKey(_windowHandle, HOTKEY_ID, MOD_CONTROL | MOD_SHIFT, VK_L);
+        }
+
+        private void RemoveWindowIcon(IntPtr hwnd)
+        {
+            try
+            {
+                int extendedStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+                SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle | WS_EX_DLGMODALFRAME);
+                
+                SendMessage(hwnd, WM_SETICON, new IntPtr(1), IntPtr.Zero); // Large Icon
+                SendMessage(hwnd, WM_SETICON, new IntPtr(0), IntPtr.Zero); // Small Icon
+                
+                SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+            }
+            catch
+            {
+                // Safe fallback if Win32 calls fail
+            }
         }
 
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

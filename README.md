@@ -1,8 +1,4 @@
-# Antigravity LiveChat Overlay
-
-<p align="center">
-  <img src="logo.png" alt="XCYoutube Live Chat Overlay Logo" width="120" height="120" />
-</p>
+# XCYoutube Live Chat Overlay
 
 A premium, hardware-accelerated, transparent always-on-top YouTube live chat overlay for Windows. Built natively using C# and WPF (.NET 8.0), this tool allows streamers, developers, and gamers to display a highly customizable live chat HUD directly over their gameplay or active windows without requiring a single YouTube API developer key.
 
@@ -87,3 +83,11 @@ The overlay comes packed with premium pre-configured CSS layouts:
 - **Rendering**: Microsoft Edge WebView2 Control (`Microsoft.Web.WebView2`)
 - **Interoperability**: Windows User32 Win32 API (`user32.dll`)
 - **Format**: JSON (`System.Text.Json` for layout configuration persistence)
+
+---
+
+## Support Me
+
+If you find this overlay helpful, please consider supporting development:
+- **BagiBagi**: [bagibagi.co/xppaicyberr](https://bagibagi.co/xppaicyberr)
+- **Crypto Address (ETH/BSC/Polygon)**: `0xE11018C82D4405bDBc7414eC988Fd08351666666`
