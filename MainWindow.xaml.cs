@@ -167,10 +167,9 @@ namespace ytlivechatwedus
             bool isCustom = comboPresets.SelectedIndex == 4;
             
             // Toggle custom CSS textbox visibility
-            if (lblCustomCss != null && txtCustomCss != null)
+            if (txtCustomCss != null)
             {
                 var vis = isCustom ? Visibility.Visible : Visibility.Collapsed;
-                lblCustomCss.Visibility = vis;
                 txtCustomCss.Visibility = vis;
             }
 
