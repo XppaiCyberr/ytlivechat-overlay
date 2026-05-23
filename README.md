@@ -1,5 +1,8 @@
 # XCYoutube Live Chat Overlay
 
+<img width="460" height="547" alt="Screenshot 2026-05-23 074536" src="https://github.com/user-attachments/assets/faec8be7-3454-49d8-8f19-ac2b4a90b31d" />
+<img width="1919" height="1079" alt="Screenshot 2026-05-23 074646" src="https://github.com/user-attachments/assets/01276da7-1108-4ee8-a75b-b5b69d7f317c" />
+
 A premium, hardware-accelerated, transparent always-on-top YouTube live chat overlay for Windows. Built natively using C# and WPF (.NET 8.0), this tool allows streamers, developers, and gamers to display a highly customizable live chat HUD directly over their gameplay or active windows without requiring a single YouTube API developer key.
 
 ---
