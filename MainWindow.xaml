@@ -89,6 +89,59 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0,5,0,5"/>
         </Style>
+
+        <!-- Modern Toggle Switch Style -->
+        <Style x:Key="ModernSwitchStyle" TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="#E4E4E6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="0,6,0,6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid Background="Transparent" Height="30">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- The Switch Track -->
+                            <Border x:Name="Track" Grid.Column="0" Width="46" Height="24" CornerRadius="12" Background="#24242B" BorderBrush="#3E3E4A" BorderThickness="1" VerticalAlignment="Center">
+                                <!-- The Switch Thumb -->
+                                <Border x:Name="Thumb" Width="18" Height="18" CornerRadius="9" Background="#636681" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2,0,0,0">
+                                    <Border.RenderTransform>
+                                        <TranslateTransform x:Name="ThumbTranslate" X="0"/>
+                                    </Border.RenderTransform>
+                                </Border>
+                            </Border>
+                            
+                            <!-- Switch Label Text -->
+                            <ContentPresenter Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                        </Grid>
+                        
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Track" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#00f2fe" Offset="0"/>
+                                            <GradientStop Color="#4facfe" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Track" Property="BorderBrush" Value="#00f2fe"/>
+                                <Setter TargetName="Thumb" Property="Background" Value="White"/>
+                                <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="Thumb" Property="Margin" Value="0,0,2,0"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Track" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="20">
@@ -134,13 +187,13 @@
                         <TextBlock Text="Overlay Dimensions &amp; Behavior" Style="{StaticResource HeaderStyle}"/>
 
                         <!-- Position Lock/Unlock & Click-Through -->
-                        <CheckBox x:Name="chkClickThrough" Content="Enable Mouse Click-Through (Lock Overlay)" IsChecked="False" Checked="ChkClickThrough_Changed" Unchecked="ChkClickThrough_Changed"/>
+                        <ToggleButton x:Name="chkClickThrough" Style="{StaticResource ModernSwitchStyle}" Content="Enable Mouse Click-Through (Lock Overlay)" IsChecked="False" Checked="ChkClickThrough_Changed" Unchecked="ChkClickThrough_Changed"/>
                         <TextBlock Text="When locked, you cannot click the overlay. It acts as a passive background hud. Press Ctrl+Shift+L to lock/unlock on the fly." Style="{StaticResource HelpTextStyle}"/>
 
                         <Separator Height="1" Background="#2A2A32" Margin="0,15"/>
 
                         <!-- Always on Top toggle -->
-                        <CheckBox x:Name="chkAlwaysOnTop" Content="Always On Top" IsChecked="True" Checked="ChkAlwaysOnTop_Changed" Unchecked="ChkAlwaysOnTop_Changed"/>
+                        <ToggleButton x:Name="chkAlwaysOnTop" Style="{StaticResource ModernSwitchStyle}" Content="Always On Top" IsChecked="True" Checked="ChkAlwaysOnTop_Changed" Unchecked="ChkAlwaysOnTop_Changed"/>
                         <TextBlock Text="Keeps the chat layer on top of games and other windows." Style="{StaticResource HelpTextStyle}"/>
                     </StackPanel>
                 </Border>
