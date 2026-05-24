@@ -261,8 +261,31 @@ namespace ytlivechatwedus
                         window.hasDeletedMessageObserver = true;
                         const messageCache = new Map();
                         
+                        // Helper to cache fully populated messages currently in the DOM
+                        const cacheVisibleMessages = () => {{
+                            const messages = document.querySelectorAll('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer');
+                            for (const node of messages) {{
+                                if (node.classList.contains('overlay-deleted-chat')) continue;
+                                const id = node.getAttribute('id');
+                                if (id) {{
+                                    const messageSpan = node.querySelector('#message');
+                                    if (messageSpan && messageSpan.textContent && messageSpan.textContent.trim().length > 0) {{
+                                        // Cache the fully populated original innerHTML
+                                        messageCache.set(id, node.innerHTML);
+                                    }}
+                                }}
+                            }}
+                        }};
+
                         const observer = new MutationObserver((mutations) => {{
+                            let needsCacheRefresh = false;
+
                             for (const mutation of mutations) {{
+                                // Handle node additions
+                                if (mutation.addedNodes.length > 0) {{
+                                    needsCacheRefresh = true;
+                                }}
+
                                 // Handle node removals (moderator deletion)
                                 if (mutation.removedNodes.length > 0) {{
                                     for (const node of mutation.removedNodes) {{
@@ -273,6 +296,9 @@ namespace ytlivechatwedus
                                             const id = node.getAttribute('id');
                                             if (id && messageCache.has(id)) {{
                                                 const restoredNode = node.cloneNode(true);
+                                                
+                                                // Restore the fully populated HTML from our cache
+                                                restoredNode.innerHTML = messageCache.get(id);
                                                 restoredNode.classList.add('overlay-deleted-chat');
                                                 restoredNode.setAttribute('data-deleted', 'true');
                                                 
@@ -289,42 +315,37 @@ namespace ytlivechatwedus
                                     }}
                                 }}
                                 
-                                // Cache new nodes as they are added
-                                if (mutation.addedNodes.length > 0) {{
-                                    for (const node of mutation.addedNodes) {{
-                                        if (node.nodeType === Node.ELEMENT_NODE && 
-                                            (node.tagName === 'YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER' || 
-                                             node.tagName === 'YT-LIVE-CHAT-PAID-MESSAGE-RENDERER')) {{
-                                            
-                                            const id = node.getAttribute('id');
-                                            if (id) {{
-                                                messageCache.set(id, node.innerHTML);
-                                            }}
-                                        }}
-                                    }}
-                                }}
-                                
                                 // Handle inline text replacements (YouTube self-editing/deletion)
                                 if (mutation.type === 'characterData' || mutation.type === 'childList') {{
                                     const target = mutation.target;
-                                    if (target.nodeType === Node.TEXT_NODE) {{
-                                        const parent = target.parentElement;
-                                        if (parent && (parent.id === 'message' || parent.classList.contains('message'))) {{
-                                            const renderer = parent.closest('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer');
-                                            if (renderer) {{
-                                                const text = target.textContent || '';
-                                                if (text.toLowerCase().includes('message deleted') || text.toLowerCase().includes('deleted')) {{
-                                                    const id = renderer.getAttribute('id');
-                                                    if (id && messageCache.has(id)) {{
-                                                        renderer.classList.add('overlay-deleted-chat');
-                                                        renderer.setAttribute('data-deleted', 'true');
-                                                        renderer.innerHTML = messageCache.get(id);
-                                                    }}
+                                    const renderer = target.closest?.('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer') ||
+                                                     (target.parentElement && target.parentElement.closest?.('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer'));
+                                    
+                                    if (renderer && !renderer.classList.contains('overlay-deleted-chat')) {{
+                                        const messageSpan = renderer.querySelector('#message');
+                                        if (messageSpan) {{
+                                            const text = messageSpan.textContent || '';
+                                            if (text.toLowerCase().includes('message deleted') || 
+                                                text.toLowerCase().includes('deleted') || 
+                                                text.trim() === '') {{
+                                                
+                                                const id = renderer.getAttribute('id');
+                                                if (id && messageCache.has(id)) {{
+                                                    // Restore the complete populated original elements
+                                                    renderer.innerHTML = messageCache.get(id);
+                                                    renderer.classList.add('overlay-deleted-chat');
+                                                    renderer.setAttribute('data-deleted', 'true');
                                                 }}
                                             }}
                                         }}
                                     }}
                                 }}
+                            }}
+
+                            // Periodically ensure our cache is populated with fully rendered elements
+                            if (needsCacheRefresh) {{
+                                // Wait a split-second for the Web Components lifecycle to populate the inner spans
+                                setTimeout(cacheVisibleMessages, 50);
                             }}
                         }});
                         
@@ -337,14 +358,8 @@ namespace ytlivechatwedus
                                     characterData: true
                                 }});
                                 
-                                // Cache pre-existing messages
-                                const existing = chatItems.querySelectorAll('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer');
-                                for (const node of existing) {{
-                                    const id = node.getAttribute('id');
-                                    if (id) {{
-                                        messageCache.set(id, node.innerHTML);
-                                    }}
-                                }}
+                                // Initial cache run
+                                cacheVisibleMessages();
                             }} else {{
                                 setTimeout(startObserving, 500);
                             }}
