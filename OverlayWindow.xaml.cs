@@ -227,8 +227,27 @@ namespace ytlivechatwedus
 
             // Escaped CSS injection
             string cleanedCss = _currentCss.Replace("`", "\\`").Replace("\n", " ").Replace("\r", " ");
+
+            // Append deleted chat styling so it applies across all themes seamlessly
+            cleanedCss += @"
+                .overlay-deleted-chat {
+                    background-color: rgba(220, 53, 69, 0.18) !important;
+                    border-left: 4px solid #ff4b4b !important;
+                    opacity: 0.9 !important;
+                    transition: background-color 0.3s ease;
+                }
+                .overlay-deleted-chat #message::before {
+                    content: '[DELETED] ' !important;
+                    color: #ff4b4b !important;
+                    font-weight: 800 !important;
+                    font-size: 0.9em !important;
+                    text-transform: uppercase;
+                }
+            ";
+
             string js = $@"
                 (function() {{
+                    // 1. Inject Styles
                     let style = document.getElementById('custom-overlay-style');
                     if (!style) {{
                         style = document.createElement('style');
@@ -236,9 +255,106 @@ namespace ytlivechatwedus
                         document.head.appendChild(style);
                     }}
                     style.textContent = `{cleanedCss}`;
+
+                    // 2. Start Deleted Message Observer (if not already running)
+                    if (!window.hasDeletedMessageObserver) {{
+                        window.hasDeletedMessageObserver = true;
+                        const messageCache = new Map();
+                        
+                        const observer = new MutationObserver((mutations) => {{
+                            for (const mutation of mutations) {{
+                                // Handle node removals (moderator deletion)
+                                if (mutation.removedNodes.length > 0) {{
+                                    for (const node of mutation.removedNodes) {{
+                                        if (node.nodeType === Node.ELEMENT_NODE && 
+                                            (node.tagName === 'YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER' || 
+                                             node.tagName === 'YT-LIVE-CHAT-PAID-MESSAGE-RENDERER')) {{
+                                            
+                                            const id = node.getAttribute('id');
+                                            if (id && messageCache.has(id)) {{
+                                                const restoredNode = node.cloneNode(true);
+                                                restoredNode.classList.add('overlay-deleted-chat');
+                                                restoredNode.setAttribute('data-deleted', 'true');
+                                                
+                                                const parent = mutation.target;
+                                                const nextSibling = mutation.nextSibling;
+                                                
+                                                if (nextSibling && nextSibling.parentNode === parent) {{
+                                                    parent.insertBefore(restoredNode, nextSibling);
+                                                }} else {{
+                                                    parent.appendChild(restoredNode);
+                                                }}
+                                            }}
+                                        }}
+                                    }}
+                                }}
+                                
+                                // Cache new nodes as they are added
+                                if (mutation.addedNodes.length > 0) {{
+                                    for (const node of mutation.addedNodes) {{
+                                        if (node.nodeType === Node.ELEMENT_NODE && 
+                                            (node.tagName === 'YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER' || 
+                                             node.tagName === 'YT-LIVE-CHAT-PAID-MESSAGE-RENDERER')) {{
+                                            
+                                            const id = node.getAttribute('id');
+                                            if (id) {{
+                                                messageCache.set(id, node.innerHTML);
+                                            }}
+                                        }}
+                                    }}
+                                }}
+                                
+                                // Handle inline text replacements (YouTube self-editing/deletion)
+                                if (mutation.type === 'characterData' || mutation.type === 'childList') {{
+                                    const target = mutation.target;
+                                    if (target.nodeType === Node.TEXT_NODE) {{
+                                        const parent = target.parentElement;
+                                        if (parent && (parent.id === 'message' || parent.classList.contains('message'))) {{
+                                            const renderer = parent.closest('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer');
+                                            if (renderer) {{
+                                                const text = target.textContent || '';
+                                                if (text.toLowerCase().includes('message deleted') || text.toLowerCase().includes('deleted')) {{
+                                                    const id = renderer.getAttribute('id');
+                                                    if (id && messageCache.has(id)) {{
+                                                        renderer.classList.add('overlay-deleted-chat');
+                                                        renderer.setAttribute('data-deleted', 'true');
+                                                        renderer.innerHTML = messageCache.get(id);
+                                                    }}
+                                                }}
+                                            }}
+                                        }}
+                                    }}
+                                }}
+                            }}
+                        }});
+                        
+                        const startObserving = () => {{
+                            const chatItems = document.querySelector('yt-live-chat-item-list-renderer #items');
+                            if (chatItems) {{
+                                observer.observe(chatItems, {{ 
+                                    childList: true, 
+                                    subtree: true,
+                                    characterData: true
+                                }});
+                                
+                                // Cache pre-existing messages
+                                const existing = chatItems.querySelectorAll('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer');
+                                for (const node of existing) {{
+                                    const id = node.getAttribute('id');
+                                    if (id) {{
+                                        messageCache.set(id, node.innerHTML);
+                                    }}
+                                }}
+                            }} else {{
+                                setTimeout(startObserving, 500);
+                            }}
+                        }};
+                        
+                        startObserving();
+                    }}
                 }})();
             ";
-            
+
             await webView.CoreWebView2.ExecuteScriptAsync(js);
         }
         private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
