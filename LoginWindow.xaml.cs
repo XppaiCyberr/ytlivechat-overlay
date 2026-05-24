@@ -19,6 +19,9 @@ namespace ytlivechatwedus
                 var env = await CoreWebView2Environment.CreateAsync(null, null, null);
                 await webView.EnsureCoreWebView2Async(env);
 
+                // Subscribe to SourceChanged to detect successful login redirects
+                webView.SourceChanged += WebView_SourceChanged;
+
                 // Set standard browser User-Agent to bypass Google login blocking in embedded views
                 webView.CoreWebView2.Settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
@@ -35,6 +38,23 @@ namespace ytlivechatwedus
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to initialize Login WebView2: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void WebView_SourceChanged(object? sender, CoreWebView2SourceChangedEventArgs e)
+        {
+            if (webView.Source == null) return;
+            string url = webView.Source.ToString();
+
+            // Detect redirection back to YouTube after successful sign-in completes
+            if (url.Contains("youtube.com") && 
+                !url.Contains("accounts.google.com") && 
+                !url.Contains("signin") &&
+                (webView.Source.AbsolutePath == "/" || url.Contains("action_handle_signin=true")))
+            {
+                // Sign-in completed successfully, automatically close the dialog!
+                DialogResult = true;
+                Close();
             }
         }
     }
