@@ -49,6 +49,7 @@ namespace ytlivechatwedus
         private OverlayWindow? _overlayWindow;
         private readonly string _settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
         private bool _isLoaded = false;
+        private string _youtubeCookies = "";
 
         public MainWindow()
         {
@@ -146,6 +147,7 @@ namespace ytlivechatwedus
 
                 _overlayWindow.Show();
                 ApplyChangesToOverlay();
+                _overlayWindow.Cookies = _youtubeCookies;
                 _overlayWindow.LoadChat(txtUrl.Text);
 
                 lblStatus.Text = "Status: Active";
@@ -154,8 +156,49 @@ namespace ytlivechatwedus
             else
             {
                 // Reload chat on existing overlay
+                _overlayWindow.Cookies = _youtubeCookies;
                 _overlayWindow.LoadChat(txtUrl.Text);
             }
+        }
+
+        private void BtnConfigureCookies_Click(object sender, RoutedEventArgs e)
+        {
+            var cookieWindow = new CookieWindow(_youtubeCookies);
+            cookieWindow.Owner = this;
+            if (cookieWindow.ShowDialog() == true)
+            {
+                _youtubeCookies = cookieWindow.Cookies;
+                SaveSettings();
+
+                // If overlay is active, apply the new cookies and reload
+                if (_overlayWindow != null)
+                {
+                    _overlayWindow.Cookies = _youtubeCookies;
+                    _overlayWindow.LoadChat(txtUrl.Text);
+                }
+            }
+        }
+
+        private void BtnInteractiveLogin_Click(object sender, RoutedEventArgs e)
+        {
+            // Clear manual cookies so they don't override the interactive session
+            _youtubeCookies = "";
+            SaveSettings();
+
+            var loginWindow = new LoginWindow();
+            loginWindow.Owner = this;
+            loginWindow.Closed += (s, ev) =>
+            {
+                // Re-connect / reload the live chat if overlay is active
+                if (_overlayWindow != null)
+                {
+                    // By passing the current manual cookies (which is now empty), 
+                    // WebView2 automatically uses the logged-in shared session cookies!
+                    _overlayWindow.Cookies = _youtubeCookies;
+                    _overlayWindow.LoadChat(txtUrl.Text);
+                }
+            };
+            loginWindow.ShowDialog();
         }
 
         private void SliderOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -294,6 +337,7 @@ namespace ytlivechatwedus
                         chkClickThrough.IsChecked = settings.ClickThrough;
                         chkAlwaysOnTop.IsChecked = settings.AlwaysOnTop;
                         txtCustomCss.Text = settings.CustomCss;
+                        _youtubeCookies = settings.YoutubeCookies ?? "";
                         return;
                     }
                 }
@@ -311,6 +355,7 @@ namespace ytlivechatwedus
             chkClickThrough.IsChecked = false;
             chkAlwaysOnTop.IsChecked = true;
             txtCustomCss.Text = ThemePresets.BaseCSS;
+            _youtubeCookies = "";
         }
 
         private void SaveSettings()
@@ -325,7 +370,8 @@ namespace ytlivechatwedus
                     PresetIndex = comboPresets.SelectedIndex,
                     ClickThrough = chkClickThrough.IsChecked == true,
                     AlwaysOnTop = chkAlwaysOnTop.IsChecked == true,
-                    CustomCss = txtCustomCss.Text
+                    CustomCss = txtCustomCss.Text,
+                    YoutubeCookies = _youtubeCookies
                 };
 
                 string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
@@ -364,5 +410,6 @@ namespace ytlivechatwedus
         public bool ClickThrough { get; set; }
         public bool AlwaysOnTop { get; set; }
         public string CustomCss { get; set; } = "";
+        public string YoutubeCookies { get; set; } = "";
     }
 }

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using Microsoft.Web.WebView2.Core;
+using System.Text.Json;
 
 namespace ytlivechatwedus
 {
@@ -38,6 +39,8 @@ namespace ytlivechatwedus
         private string _currentCss = ThemePresets.MinimalistBubbles;
         private double _currentZoom = 1.0;
         private bool _isInitialized = false;
+        private string? _pendingUrl = null;
+        public string? Cookies { get; set; } = "";
 
         public OverlayWindow()
         {
@@ -61,6 +64,7 @@ namespace ytlivechatwedus
                 await webView.EnsureCoreWebView2Async(env);
 
                 // Configure WebView settings for a clean kiosk/widget feel
+                webView.CoreWebView2.Settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
                 webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
                 webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
                 webView.CoreWebView2.Settings.IsZoomControlEnabled = false;
@@ -77,6 +81,13 @@ namespace ytlivechatwedus
                 // Set initial zoom and styles
                 SetZoom(_currentZoom);
                 UpdateTheme(_currentCss);
+
+                // If there is a pending URL, load it now!
+                if (!string.IsNullOrEmpty(_pendingUrl))
+                {
+                    LoadChat(_pendingUrl);
+                    _pendingUrl = null;
+                }
             }
             catch (Exception ex)
             {
@@ -94,7 +105,11 @@ namespace ytlivechatwedus
 
         public void LoadChat(string videoIdOrUrl)
         {
-            if (!_isInitialized) return;
+            if (!_isInitialized)
+            {
+                _pendingUrl = videoIdOrUrl;
+                return;
+            }
 
             string? videoId = ExtractVideoId(videoIdOrUrl);
             if (string.IsNullOrEmpty(videoId))
@@ -103,8 +118,21 @@ namespace ytlivechatwedus
                 return;
             }
 
+            // Inject YouTube cookies if configured
+            ApplyCookies();
+
             string chatUrl = $"https://www.youtube.com/live_chat?v={videoId}";
-            webView.Source = new Uri(chatUrl);
+            
+            // Bypass WPF DependencyProperty change check when reloading the identical Uri
+            var targetUri = new Uri(chatUrl);
+            if (webView.Source == targetUri)
+            {
+                webView.CoreWebView2?.Navigate(chatUrl);
+            }
+            else
+            {
+                webView.Source = targetUri;
+            }
         }
 
         private string? ExtractVideoId(string? input)
@@ -224,6 +252,116 @@ namespace ytlivechatwedus
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void ApplyCookies()
+        {
+            if (webView.CoreWebView2 == null || string.IsNullOrWhiteSpace(Cookies)) return;
+
+            var cookieManager = webView.CoreWebView2.CookieManager;
+            cookieManager.DeleteAllCookies();
+
+            string cookieInput = Cookies.Trim();
+
+            // 1. JSON Array format (e.g. from standard extensions)
+            if (cookieInput.StartsWith("[") && cookieInput.EndsWith("]"))
+            {
+                try
+                {
+                    using var doc = JsonDocument.Parse(cookieInput);
+                    if (doc.RootElement.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var element in doc.RootElement.EnumerateArray())
+                        {
+                            string name = "";
+                            string value = "";
+                            string domain = ".youtube.com";
+                            string path = "/";
+                            bool isSecure = false;
+
+                            if (element.TryGetProperty("name", out var nameProp)) name = nameProp.GetString() ?? "";
+                            if (element.TryGetProperty("value", out var valProp)) value = valProp.GetString() ?? "";
+                            if (element.TryGetProperty("domain", out var domProp)) domain = domProp.GetString() ?? ".youtube.com";
+                            if (element.TryGetProperty("path", out var pathProp)) path = pathProp.GetString() ?? "/";
+                            if (element.TryGetProperty("secure", out var secProp)) isSecure = secProp.GetBoolean();
+
+                            if (string.IsNullOrEmpty(name)) continue;
+
+                            // Secure/limit domain to YouTube and Google
+                            if (!domain.Contains("youtube.com") && !domain.Contains("google.com")) continue;
+
+                            var cookie = cookieManager.CreateCookie(name, value, domain, path);
+                            cookie.IsSecure = isSecure;
+                            cookieManager.AddOrUpdateCookie(cookie);
+                        }
+                        return;
+                    }
+                }
+                catch
+                {
+                    // Fall back if JSON parsing fails
+                }
+            }
+
+            // 2. Netscape format (tab-separated cookies.txt)
+            var lines = cookieInput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            bool isNetscape = false;
+            foreach (var line in lines)
+            {
+                if (line.Trim().StartsWith("#") || line.Contains("\t"))
+                {
+                    isNetscape = true;
+                    break;
+                }
+            }
+
+            if (isNetscape)
+            {
+                foreach (var line in lines)
+                {
+                    var trimmed = line.Trim();
+                    if (trimmed.StartsWith("#") || string.IsNullOrEmpty(trimmed)) continue;
+
+                    var parts = trimmed.Split('\t');
+                    if (parts.Length >= 7)
+                    {
+                        string domain = parts[0];
+                        string path = parts[2];
+                        bool isSecure = parts[3].Equals("TRUE", StringComparison.OrdinalIgnoreCase);
+                        string name = parts[5];
+                        string value = parts[6];
+
+                        if (!domain.Contains("youtube.com") && !domain.Contains("google.com")) continue;
+
+                        var cookie = cookieManager.CreateCookie(name, value, domain, path);
+                        cookie.IsSecure = isSecure;
+                        cookieManager.AddOrUpdateCookie(cookie);
+                    }
+                }
+                return;
+            }
+
+            // 3. Raw standard cookie string (from document.cookie)
+            var cookiePairs = cookieInput.Split(';');
+            foreach (var pair in cookiePairs)
+            {
+                var trimmedPair = pair.Trim();
+                if (string.IsNullOrEmpty(trimmedPair)) continue;
+
+                int eqIndex = trimmedPair.IndexOf('=');
+                if (eqIndex > 0)
+                {
+                    string name = trimmedPair.Substring(0, eqIndex).Trim();
+                    string value = trimmedPair.Substring(eqIndex + 1).Trim();
+
+                    var cookie = cookieManager.CreateCookie(name, value, ".youtube.com", "/");
+                    if (name.StartsWith("__Secure-"))
+                    {
+                        cookie.IsSecure = true;
+                    }
+                    cookieManager.AddOrUpdateCookie(cookie);
+                }
+            }
         }
 
         public void SetOverlayMode(bool isLocked)

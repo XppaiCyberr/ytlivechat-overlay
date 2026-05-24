@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="XCYoutube Live Chat Overlay Controller" 
-        Height="520" Width="440"
+        Height="565" Width="440"
         Background="#121214"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize">
@@ -66,6 +66,35 @@
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="10"/>
             <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- Modern Secondary Button Style -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#24242B"/>
+            <Setter Property="Foreground" Value="#A3A3B8"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#3E3E4A"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="4" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Name="border">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2E2E38"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#1A1A20"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <!-- Modern Toggle Switch Style -->
@@ -227,6 +256,30 @@
                              Padding="6,2" VerticalContentAlignment="Center" FontSize="12"
                              ToolTip="Enter the 11-char Stream ID or the watch URL."
                              Text="https://www.youtube.com/watch?v=5qap5aO4i9A"/>
+                </Grid>
+            </Border>
+
+            <!-- 1b. YouTube Authentication Card -->
+            <Border Style="{StaticResource CardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <TextBlock Text="YouTube Authentication" Style="{StaticResource SubheaderStyle}" Margin="0,0,0,1"/>
+                        <TextBlock Text="Sign in or paste cookies for member/age-gated chats." Foreground="#636681" FontSize="9.5" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="btnInteractiveLogin" Content="Sign In Directly" 
+                                Style="{StaticResource SecondaryButtonStyle}" Width="95" Height="24" Margin="0,0,6,0"
+                                Click="BtnInteractiveLogin_Click" ToolTip="Opens a secure browser window to log in directly with Google/YouTube."/>
+                        <Button x:Name="btnConfigureCookies" Content="Manual Cookies" 
+                                Style="{StaticResource SecondaryButtonStyle}" Width="95" Height="24"
+                                Click="BtnConfigureCookies_Click" ToolTip="Manually paste exported browser cookies."/>
+                    </StackPanel>
                 </Grid>
             </Border>
 
