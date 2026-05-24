@@ -206,7 +206,7 @@ namespace ytlivechatwedus
         {
             if (!_isLoaded) return;
 
-            bool isCustom = comboPresets.SelectedIndex == 4;
+            bool isCustom = comboPresets.SelectedIndex == 8;
             
             // Toggle custom CSS textbox visibility
             if (txtCustomCss != null)
@@ -220,7 +220,7 @@ namespace ytlivechatwedus
 
         private void TxtCustomCss_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!_isLoaded || comboPresets.SelectedIndex != 4) return;
+            if (!_isLoaded || comboPresets.SelectedIndex != 8) return;
             ApplyThemePreset();
         }
 
@@ -245,6 +245,18 @@ namespace ytlivechatwedus
                     selectedCss = ThemePresets.GlassmorphismLight;
                     break;
                 case 4:
+                    selectedCss = ThemePresets.GlassmorphismDark;
+                    break;
+                case 5:
+                    selectedCss = ThemePresets.PastelSakura;
+                    break;
+                case 6:
+                    selectedCss = ThemePresets.RetroArcade;
+                    break;
+                case 7:
+                    selectedCss = ThemePresets.VibrantSunset;
+                    break;
+                case 8:
                     selectedCss = txtCustomCss.Text;
                     break;
             }

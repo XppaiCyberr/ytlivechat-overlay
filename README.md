@@ -24,10 +24,14 @@ A premium, hardware-accelerated, transparent always-on-top YouTube live chat ove
 
 The overlay comes packed with premium pre-configured CSS layouts:
 
-*   **Minimalist Bubbles**: Elegant, translucent chat bubbles with distinct username colors for Owners, Moderators, Members, and standard users.
-*   **Neon Cyberpunk**: Cyberpunk neon cyan text with soft pink outlines, styled with a developer monospaced layout and faint outer glow.
-*   **Clean Monospace**: A terminal console printout layout designed for tech streamers or coders.
-*   **Glassmorphic Frost**: Frosted-glass backdrop with modern blur filters.
+*   **Minimalist Bubbles**: Elegant, translucent chat bubbles with distinct username colors for Owners, Moderators, Members, and standard users. Avatars are hidden for an ultra-compact message feed.
+*   **Neon Cyberpunk**: Cyberpunk neon cyan text with soft pink outlines, styled with a developer monospaced layout, glowing avatar frames, and vibrant neon paid events.
+*   **Clean Monospace**: A minimal terminal console printout layout designed for tech streamers or coders. Avatars are hidden for zero visual clutter.
+*   **Glassmorphic Light (Frost)**: Translucent, frosted light-themed glass bubble design with elegant back-blur.
+*   **Glassmorphic Dark (Eclipse)**: Deep frosted obsidian glass bubbles with thin translucent outer borders and glowing neon cyan/magenta/emerald username highlights. Perfect for dark theme game streams.
+*   **Pastel Sakura Blossom**: Sweet pastel pink and lavender bubble gradients, cute rounded typography, and soft pink shadows.
+*   **Retro Arcade (8-Bit)**: Solid blocky retro borders, hard drop shadows, Courier/monospace sizing, and arcade color highlights.
+*   **Vibrant Sunset Gradient**: Premium left-accent gradient strip running from bright sunset orange to deep crimson-magenta, modern font scaling, and warm pastel text.
 *   **Custom CSS Editor**: A live editor text box to inject your own custom stylesheets and style the chat exactly how you want.
 
 ---

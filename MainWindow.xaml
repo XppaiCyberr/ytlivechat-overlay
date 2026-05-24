@@ -298,7 +298,11 @@
                             <ComboBoxItem Content="Minimalist Bubbles"/>
                             <ComboBoxItem Content="Neon Cyberpunk"/>
                             <ComboBoxItem Content="Clean Monospace"/>
-                            <ComboBoxItem Content="Glassmorphic Frost"/>
+                            <ComboBoxItem Content="Glassmorphic Light (Frost)"/>
+                            <ComboBoxItem Content="Glassmorphic Dark (Eclipse)"/>
+                            <ComboBoxItem Content="Pastel Sakura Blossom"/>
+                            <ComboBoxItem Content="Retro 8-Bit Arcade"/>
+                            <ComboBoxItem Content="Vibrant Sunset Gradient"/>
                             <ComboBoxItem Content="Custom CSS Editor"/>
                         </ComboBox>
                     </Grid>
